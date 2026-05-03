@@ -91,14 +91,14 @@
   padding: 10px 28px;
   border-radius: var(--radius-sm);
   border: 3px solid var(--dark);
-  box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
   transition: all 0.1s;
   cursor: pointer;
 }
 
 .runBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 0 rgba(0,0,0,0.3);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
 }
 
 .runBtn:active:not(:disabled) {
@@ -144,4 +144,51 @@
 
 .outputError pre {
   color: #f38ba8;
+}
+
+.solutionBtn {
+  background: var(--cyan);
+  color: var(--dark);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--dark);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.solutionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.attemptsHint {
+  font-size: 0.85rem;
+  color: #f9e2af;
+  font-weight: 600;
+}
+
+.solutionBox {
+  background: #1a2a1a;
+  border-top: 2px solid #3a5a3a;
+  padding: 16px 20px;
+  border-left: 4px solid var(--green);
+}
+
+.solutionLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #a6e3a1;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.solutionBox pre {
+  color: #a6e3a1;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  word-break: break-word;
 }

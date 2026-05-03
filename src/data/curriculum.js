@@ -34,6 +34,9 @@ Let's write your **very first program!** Click ▶ Run Code below!
 print("Hello, World!")
 print("My name is Python!")
 print("Nice to meet you! 😊")`,
+        solution: `print("Hello, World!")
+print("My name is Python!")
+print("Nice to meet you! 😊")`,
         quiz: {
           id: 'quiz-1-1',
           questions: [
@@ -77,6 +80,13 @@ Try changing the name and age below and run it! 👇
         `,
         starterCode: `# Change these to YOUR name and age!
 name = "Arjun"
+age = 12
+city = "Hyderabad"
+
+print("My name is", name)
+print("I am", age, "years old")
+print("I live in", city)`,
+        solution: `name = "Arjun"
 age = 12
 city = "Hyderabad"
 
@@ -138,6 +148,17 @@ print("Power:", 2 ** 10)
 print("Remainder:", 17 % 5)
 
 # Try your own!
+my_age = 12
+years_to_18 = 18 - my_age
+print("Years to 18:", years_to_18)`,
+        solution: `# Python Calculator!
+print("Addition:", 5 + 3)
+print("Subtraction:", 100 - 37)
+print("Multiplication:", 6 * 7)
+print("Division:", 22 / 7)
+print("Power:", 2 ** 10)
+print("Remainder:", 17 % 5)
+
 my_age = 12
 years_to_18 = 18 - my_age
 print("Years to 18:", years_to_18)`,

@@ -27,12 +27,14 @@ async function loadPyodideOnce() {
   return pyodideLoading
 }
 
-export default function CodeEditor({ starterCode = '', lessonId }) {
+export default function CodeEditor({ starterCode = '', lessonId, solution = '' }) {
   const [code, setCode] = useState(starterCode)
   const [output, setOutput] = useState('')
   const [running, setRunning] = useState(false)
   const [pyReady, setPyReady] = useState(false)
   const [error, setError] = useState(null)
+  const [attempts, setAttempts] = useState(0)
+  const [showSolution, setShowSolution] = useState(false)
   const textareaRef = useRef(null)
 
   // Pre-load Pyodide in background when component mounts
@@ -58,6 +60,8 @@ export default function CodeEditor({ starterCode = '', lessonId }) {
     setRunning(true)
     setOutput('')
     setError(null)
+    const newAttempts = attempts + 1
+    setAttempts(newAttempts)
 
     try {
       const pyodide = await loadPyodideOnce()
@@ -80,6 +84,8 @@ export default function CodeEditor({ starterCode = '', lessonId }) {
     setCode(starterCode)
     setOutput('')
     setError(null)
+    setAttempts(0)
+    setShowSolution(false)
   }
 
   return (
@@ -116,12 +122,33 @@ export default function CodeEditor({ starterCode = '', lessonId }) {
         >
           {running ? '⏳ Running...' : '▶ Run Code'}
         </button>
+        {attempts >= 3 && solution && (
+          <button
+            onClick={() => setShowSolution(!showSolution)}
+            className={styles.solutionBtn}
+            title="View solution"
+          >
+            {showSolution ? '🔒 Hide Solution' : '💡 Show Solution'}
+          </button>
+        )}
+        {attempts > 0 && attempts < 3 && solution && (
+          <span className={styles.attemptsHint}>
+            🎯 {3 - attempts} attempt{3 - attempts === 1 ? '' : 's'} left for hint
+          </span>
+        )}
       </div>
 
       {(output || error) && (
         <div className={`${styles.output} ${error ? styles.outputError : ''}`}>
           <div className={styles.outputLabel}>Output:</div>
           <pre>{error ? `❌ Error:\n${error}` : output}</pre>
+        </div>
+      )}
+
+      {showSolution && solution && (
+        <div className={styles.solutionBox}>
+          <div className={styles.solutionLabel}>💡 Solution:</div>
+          <pre>{solution}</pre>
         </div>
       )}
     </div>

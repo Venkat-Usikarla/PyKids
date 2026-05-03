@@ -165,7 +165,7 @@ export default function Lesson() {
 
         {/* Code Editor */}
         <h3 className={styles.editorTitle}>🧪 Try It Yourself!</h3>
-        <CodeEditor starterCode={lesson.starterCode} lessonId={lessonId} />
+        <CodeEditor starterCode={lesson.starterCode} lessonId={lessonId} solution={lesson.solution} />
 
         {/* Complete button */}
         <div className={styles.completeRow}>

@@ -6,7 +6,7 @@ import CodeEditor from '../components/CodeEditor'
 import styles from './Learn.module.css'
 
 // Make qa() available globally for onclick handlers in lesson HTML
-window.qa = function(btn, correct) {
+window.qa = function (btn, correct) {
   const opts = btn.closest('.quiz-opts').querySelectorAll('.qopt')
   opts.forEach(o => o.classList.remove('correct', 'wrong'))
   btn.classList.add(correct ? 'correct' : 'wrong')
@@ -18,10 +18,10 @@ window.qa = function(btn, correct) {
 }
 
 const SECTIONS = [
-  { label: 'Zero to Python', indices: [0,1,2,3,4,5,6,7,8] },
-  { label: 'Control Flow', indices: [9,10,11,17] },
-  { label: 'Data Structures', indices: [12,13,14] },
-  { label: 'Functions & Modules', indices: [15,16] },
+  { label: 'Zero to Python', indices: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+  { label: 'Control Flow', indices: [9, 10, 11, 17] },
+  { label: 'Data Structures', indices: [12, 13, 14] },
+  { label: 'Functions & Modules', indices: [15, 16] },
   { label: 'Python in the World', indices: [18] },
 ]
 
@@ -89,7 +89,7 @@ export default function Learn() {
 
           <div className={styles.editorSection}>
             <h3 className={styles.editorTitle}>Try it yourself</h3>
-            <CodeEditor starterCode={lesson.starter} lessonId={lesson.id} />
+            <CodeEditor starterCode={lesson.starter} lessonId={lesson.id} solution={lesson.solution} />
           </div>
 
           <div className={styles.navRow}>
