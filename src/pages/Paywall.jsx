@@ -81,7 +81,7 @@ export default function Paywall() {
           <h3>Payment Details</h3>
           <div className={styles.paymentRow}>
             <span>UPI ID</span>
-            <strong>yourname@upi</strong>
+            <strong>9949995592@fam</strong>
           </div>
           <div className={styles.paymentRow}>
             <span>Name</span>
@@ -95,7 +95,7 @@ export default function Paywall() {
 
         <div className={styles.contactBox}>
           <p>
-            After paying, WhatsApp your screenshot to <strong>+91 XXXXX XXXXX</strong> with your email:
+            After paying, WhatsApp your screenshot to <strong>+91 99499 95592</strong> with your email:
           </p>
           <div className={styles.emailChip}>{profile?.email ?? 'your email'}</div>
           <p className={styles.timeNote}>Activated within 2–4 hours. This page checks automatically.</p>
