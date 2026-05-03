@@ -1,0 +1,114 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  background: var(--cream);
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--white);
+  border: 3px solid var(--dark);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.icon { font-size: 3rem; }
+
+.card h1 {
+  font-size: 1.7rem;
+  color: var(--dark);
+}
+
+.sub {
+  color: var(--gray);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.infoBox {
+  width: 100%;
+  background: var(--gray-light);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.92rem;
+}
+
+.infoRow span { color: var(--gray); font-weight: 600; }
+.amount { color: var(--coral); }
+
+.instruction {
+  font-size: 0.88rem;
+  color: var(--gray);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.emailChip {
+  background: var(--teal);
+  color: white;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.polling {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--gray);
+  font-weight: 600;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.signoutBtn {
+  background: none;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 20px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--gray);
+  transition: all 0.15s;
+}
+
+.signoutBtn:hover {
+  border-color: var(--dark);
+  color: var(--dark);
+}

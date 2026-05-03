@@ -1,0 +1,177 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background: var(--cream);
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+}
+
+.emoji { font-size: 3rem; }
+.card h1 { font-size: 1.8rem; }
+
+.sub {
+  color: var(--gray);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 10px 0;
+}
+
+.stepIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  color: var(--gray);
+}
+
+.done .stepIcon {
+  background: var(--green);
+  color: white;
+}
+
+.stepTitle {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--dark);
+}
+
+.stepDesc {
+  font-size: 0.82rem;
+  color: var(--gray);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.connector {
+  width: 2px;
+  height: 16px;
+  background: var(--border);
+  margin-left: 13px;
+}
+
+.paymentBox {
+  background: var(--gray-light);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paymentBox h3 {
+  font-size: 0.9rem;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.paymentRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.paymentRow span { color: var(--gray); font-weight: 600; }
+.amount { color: var(--coral); font-size: 1rem; }
+
+.contactBox {
+  background: #eff9ff;
+  border: 2px solid #b3e0ff;
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--dark);
+  font-weight: 600;
+}
+
+.emailChip {
+  background: var(--teal);
+  color: white;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.timeNote {
+  color: var(--gray);
+  font-size: 0.82rem;
+}
+
+.pollStatus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--gray);
+  font-weight: 600;
+}
+
+.pollDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.checkNowBtn {
+  background: none;
+  border: none;
+  color: var(--coral);
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-decoration: underline;
+  padding: 0;
+}
+
+.signoutBtn {
+  font-size: 0.88rem;
+  padding: 9px 22px;
+  align-self: center;
+}

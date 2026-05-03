@@ -1,0 +1,67 @@
+.page { min-height: 100vh; background: var(--cream); }
+
+.header {
+  background: #1a237e;
+  padding: 32px 28px;
+  color: white;
+}
+
+.headerInner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header h1 { font-size: 1.8rem; color: white; }
+.header p { color: rgba(255,255,255,0.6); font-weight: 600; margin-top: 4px; }
+
+.statsRow { display: flex; gap: 12px; }
+
+.stat {
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(255,255,255,0.2);
+  text-align: center;
+  min-width: 90px;
+}
+
+.statVal { font-family: var(--font-heading); font-size: 1.2rem; color: var(--dark); }
+.statLabel { font-size: 0.72rem; font-weight: 700; color: rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+.body { max-width: 900px; margin: 0 auto; padding: 36px 28px; }
+
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+.bigCard { display: flex; flex-direction: column; gap: 16px; }
+
+.cardTop { display: flex; justify-content: space-between; align-items: flex-start; }
+.cardTop h2 { font-size: 1.4rem; }
+.cardTop p { color: var(--gray); font-size: 0.88rem; font-weight: 600; margin-top: 4px; }
+.cardIcon { font-size: 2.2rem; }
+
+.progressTrack {
+  height: 10px;
+  background: var(--gray-light);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s ease;
+  min-width: 4px;
+}
+
+.cardBtn { font-size: 0.9rem; padding: 12px 20px; }
+
+@media (max-width: 600px) {
+  .cards { grid-template-columns: 1fr; }
+  .header { padding: 24px 16px; }
+  .body { padding: 24px 16px; }
+}
