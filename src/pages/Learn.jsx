@@ -5,24 +5,26 @@ import { LESSONS } from '../data/lessons'
 import CodeEditor from '../components/CodeEditor'
 import styles from './Learn.module.css'
 
-// Make qa() available globally for onclick handlers in lesson HTML
-window.qa = function (btn, correct) {
-  const opts = btn.closest('.quiz-opts').querySelectorAll('.qopt')
-  opts.forEach(o => o.classList.remove('correct', 'wrong'))
-  btn.classList.add(correct ? 'correct' : 'wrong')
-  if (!correct) {
-    opts.forEach(o => {
-      if (o.getAttribute('onclick')?.includes('true')) o.classList.add('correct')
-    })
+// qa() — handles inline quiz buttons in lesson HTML
+if (typeof window !== 'undefined') {
+  window.qa = function(btn, correct) {
+    const opts = btn.closest('.quiz-opts').querySelectorAll('.qopt')
+    opts.forEach(o => { o.classList.remove('correct', 'wrong'); o.disabled = true })
+    btn.classList.add(correct ? 'correct' : 'wrong')
+    if (!correct) {
+      opts.forEach(o => {
+        if (o.getAttribute('onclick')?.includes('true')) o.classList.add('correct')
+      })
+    }
   }
 }
 
 const SECTIONS = [
-  { label: 'Zero to Python', indices: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
-  { label: 'Control Flow', indices: [9, 10, 11, 17] },
-  { label: 'Data Structures', indices: [12, 13, 14] },
-  { label: 'Functions & Modules', indices: [15, 16] },
-  { label: 'Python in the World', indices: [18] },
+  { label: 'Foundations',          indices: [0, 1, 2, 3, 4] },
+  { label: 'Numbers & Strings',    indices: [5, 6, 7, 8] },
+  { label: 'Control Flow',         indices: [9, 10, 11] },
+  { label: 'Data Structures',      indices: [12, 13, 14] },
+  { label: 'Functions & Beyond',   indices: [15, 16, 17, 18] },
 ]
 
 export default function Learn() {
@@ -89,7 +91,7 @@ export default function Learn() {
 
           <div className={styles.editorSection}>
             <h3 className={styles.editorTitle}>Try it yourself</h3>
-            <CodeEditor starterCode={lesson.starter} lessonId={lesson.id} solution={lesson.solution} />
+            <CodeEditor starterCode={lesson.starter} lessonId={lesson.id} />
           </div>
 
           <div className={styles.navRow}>
