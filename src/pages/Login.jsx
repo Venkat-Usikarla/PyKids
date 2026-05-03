@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import styles from './Login.module.css'
@@ -6,6 +6,10 @@ import styles from './Login.module.css'
 export default function Login() {
   const [searchParams] = useSearchParams()
   const [isSignup, setIsSignup] = useState(searchParams.get('signup') === 'true')
+
+  useEffect(() => {
+    setIsSignup(searchParams.get('signup') === 'true')
+  }, [searchParams])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
