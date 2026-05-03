@@ -42,7 +42,7 @@ export default function Pending() {
         <div className={styles.infoBox}>
           <div className={styles.infoRow}>
             <span>UPI ID</span>
-            <strong>yourname@upi</strong>
+            <strong>9949995592@fam</strong>
           </div>
           <div className={styles.infoRow}>
             <span>Amount</span>
@@ -51,7 +51,7 @@ export default function Pending() {
         </div>
 
         <p className={styles.instruction}>
-          After paying, WhatsApp your screenshot to <strong>+91 XXXXX XXXXX</strong> along with your registered email:
+          After paying, WhatsApp your screenshot to <strong>+91 99499 95592</strong> along with your registered email:
         </p>
         <div className={styles.emailChip}>{profile?.email ?? ''}</div>
 
