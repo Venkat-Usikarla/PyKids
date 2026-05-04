@@ -49,7 +49,7 @@ export default function Landing() {
               </>
             )}
           </div>
-          <p className={styles.price}>₹599 one-time · Lifetime access</p>
+
         </div>
         <div className={styles.heroArt}>
           <div className={styles.codeCard}>
