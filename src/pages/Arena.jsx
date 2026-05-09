@@ -26,24 +26,25 @@ async function loadPyodideOnce() {
 }
 
 const DIFF_COLORS = { easy: styles.easy, medium: styles.medium, hard: styles.hard }
-const DIFF_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' }
+const DIFF_LABELS  = { easy: 'Easy', medium: 'Medium', hard: 'Hard' }
+const XP_VALUES    = { easy: 10, medium: 20, hard: 35 }
+const MAX_TRIES_FOR_SOLUTION = 3
 
 export default function Arena() {
   const { user } = useAuth()
-  const [problems] = useState(PROBLEMS)
-  const [filter, setFilter] = useState('all')
-  const [search, setSearch] = useState('')
-  const [selected, setSelected] = useState(null)
-  const [code, setCode] = useState('')
-  const [output, setOutput] = useState('')
-  const [outputType, setOutputType] = useState('') // ok | err | wrong
-  const [running, setRunning] = useState(false)
-  const [pyReady, setPyReady] = useState(false)
-  const [solved, setSolved] = useState(new Set())
-  const [showHint, setShowHint] = useState(false)
+  const [filter, setFilter]           = useState('all')
+  const [search, setSearch]           = useState('')
+  const [selected, setSelected]       = useState(null)
+  const [code, setCode]               = useState('')
+  const [output, setOutput]           = useState('')
+  const [outputType, setOutputType]   = useState('')   // ok | err | wrong | run
+  const [running, setRunning]         = useState(false)
+  const [pyReady, setPyReady]         = useState(false)
+  const [solved, setSolved]           = useState(new Set())
+  const [tries, setTries]             = useState(0)    // submit attempts on current problem
   const [showSolution, setShowSolution] = useState(false)
-  const [drawerOpen, setDrawerOpen] = useState(true)
-  const [justSolved, setJustSolved] = useState(false)
+  const [showHint, setShowHint]       = useState(false)
+  const [drawerOpen, setDrawerOpen]   = useState(true)
   const textareaRef = useRef(null)
 
   useEffect(() => {
@@ -53,14 +54,12 @@ export default function Arena() {
 
   async function fetchSolved() {
     const { data } = await supabase
-      .from('arena_solves')
-      .select('problem_id')
-      .eq('user_id', user.id)
+      .from('arena_solves').select('problem_id').eq('user_id', user.id)
     if (data) setSolved(new Set(data.map(r => r.problem_id)))
   }
 
-  const filtered = problems.filter(p => {
-    const matchDiff = filter === 'all' || p.diff === filter
+  const filtered = PROBLEMS.filter(p => {
+    const matchDiff   = filter === 'all' || p.diff === filter
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
                         p.topic.toLowerCase().includes(search.toLowerCase())
     return matchDiff && matchSearch
@@ -71,21 +70,61 @@ export default function Arena() {
     setCode(p.starter)
     setOutput('')
     setOutputType('')
-    setShowHint(false)
+    setTries(0)
     setShowSolution(false)
-    setJustSolved(false)
+    setShowHint(false)
     setDrawerOpen(false)
   }
 
+  // ── Tab / indentation handling ──────────────────────────
   function handleKeyDown(e) {
+    const ta = textareaRef.current
+    if (!ta) return
+
     if (e.key === 'Tab') {
       e.preventDefault()
-      const start = e.target.selectionStart
-      const end = e.target.selectionEnd
-      const newCode = code.substring(0, start) + '    ' + code.substring(end)
-      setCode(newCode)
+      const start = ta.selectionStart
+      const end   = ta.selectionEnd
+      const val   = ta.value
+
+      if (e.shiftKey) {
+        // Shift+Tab: remove up to 4 leading spaces from current line
+        const lineStart = val.lastIndexOf('\n', start - 1) + 1
+        const line      = val.slice(lineStart)
+        const spaces    = line.match(/^ {1,4}/)?.[0] ?? ''
+        if (spaces) {
+          const newVal = val.slice(0, lineStart) + val.slice(lineStart + spaces.length)
+          setCode(newVal)
+          requestAnimationFrame(() => {
+            ta.selectionStart = ta.selectionEnd = start - spaces.length
+          })
+        }
+      } else {
+        // Tab: insert 4 spaces
+        const newVal = val.slice(0, start) + '    ' + val.slice(end)
+        setCode(newVal)
+        requestAnimationFrame(() => {
+          ta.selectionStart = ta.selectionEnd = start + 4
+        })
+      }
+      return
+    }
+
+    // Enter: auto-indent to match current line's indentation
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const start     = ta.selectionStart
+      const val       = ta.value
+      const lineStart = val.lastIndexOf('\n', start - 1) + 1
+      const line      = val.slice(lineStart, start)
+      const indent    = line.match(/^(\s*)/)[1]
+      // If line ends with colon, add an extra level
+      const extra     = line.trimEnd().endsWith(':') ? '    ' : ''
+      const insert    = '\n' + indent + extra
+      const newVal    = val.slice(0, start) + insert + val.slice(ta.selectionEnd)
+      setCode(newVal)
       requestAnimationFrame(() => {
-        e.target.selectionStart = e.target.selectionEnd = start + 4
+        ta.selectionStart = ta.selectionEnd = start + insert.length
       })
     }
   }
@@ -106,28 +145,32 @@ export default function Arena() {
       const trimmed = captured.trim()
 
       if (submit) {
+        const newTries = tries + 1
+        setTries(newTries)
+
         const passed = selected.check(trimmed)
         if (passed) {
-          setOutput('All tests passed!')
           setOutputType('ok')
-          setJustSolved(true)
+          setOutput('All tests passed!')
           if (!solved.has(selected.id)) {
-            const newSolved = new Set([...solved, selected.id])
-            setSolved(newSolved)
+            setSolved(prev => new Set([...prev, selected.id]))
             await supabase.from('arena_solves').upsert({
               user_id: user.id,
               problem_id: selected.id,
               solved_at: new Date().toISOString(),
             })
-            await supabase.rpc('add_xp', { user_id: user.id, amount: selected.diff === 'easy' ? 10 : selected.diff === 'medium' ? 20 : 35 })
+            await supabase.rpc('add_xp', {
+              user_id: user.id,
+              amount: XP_VALUES[selected.diff] ?? 10,
+            })
           }
         } else {
-          setOutput(trimmed || '(no output)')
           setOutputType('wrong')
+          setOutput(trimmed || '(no output)')
         }
       } else {
         setOutput(trimmed || '(no output)')
-        setOutputType(trimmed ? 'run' : '')
+        setOutputType('run')
       }
     } catch (err) {
       setOutput(err.message)
@@ -137,21 +180,34 @@ export default function Arena() {
     }
   }
 
+  const canSeeSolution = tries >= MAX_TRIES_FOR_SOLUTION
+  const isSolved       = selected && solved.has(selected.id)
+
+  const easyCount   = PROBLEMS.filter(p => p.diff === 'easy').length
+  const mediumCount = PROBLEMS.filter(p => p.diff === 'medium').length
+  const hardCount   = PROBLEMS.filter(p => p.diff === 'hard').length
+
   return (
     <div className={styles.arena}>
-      {/* Drawer overlay */}
       {drawerOpen && <div className={styles.overlay} onClick={() => setDrawerOpen(false)} />}
 
-      {/* Problem Drawer */}
+      {/* ── Problem Drawer ───────────────────────────────── */}
       <div className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ''}`}>
         <div className={styles.drawerHeader}>
-          <span>55 Challenges</span>
+          <span>{PROBLEMS.length} Challenges</span>
           <button onClick={() => setDrawerOpen(false)} className={styles.drawerClose}>✕</button>
+        </div>
+
+        {/* Stats row */}
+        <div className={styles.diffStats}>
+          <span className={styles.easyTag}>Easy {easyCount}</span>
+          <span className={styles.mediumTag}>Med {mediumCount}</span>
+          <span className={styles.hardTag}>Hard {hardCount}</span>
         </div>
 
         <div className={styles.drawerSearch}>
           <input
-            placeholder="Search problems..."
+            placeholder="Search problems or topics..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className={styles.searchInput}
@@ -159,18 +215,18 @@ export default function Arena() {
         </div>
 
         <div className={styles.drawerFilters}>
-          {['all', 'easy', 'medium', 'hard'].map(f => (
+          {['all','easy','medium','hard'].map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
               className={`${styles.filterBtn} ${filter === f ? styles.filterActive : ''}`}
             >
-              {f === 'all' ? 'All' : f === 'easy' ? 'Easy' : f === 'medium' ? 'Medium' : 'Hard'}
+              {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
         </div>
 
-        <div className={styles.drawerStats}>
+        <div className={styles.drawerMeta}>
           <span>{solved.size} solved</span>
           <span>{filtered.length} shown</span>
         </div>
@@ -182,7 +238,9 @@ export default function Arena() {
               onClick={() => selectProblem(p)}
               className={`${styles.probItem} ${selected?.id === p.id ? styles.probSelected : ''}`}
             >
-              <span className={styles.probCheck}>{solved.has(p.id) ? '✓' : ''}</span>
+              <span className={`${styles.probCheck} ${solved.has(p.id) ? styles.probCheckDone : ''}`}>
+                {solved.has(p.id) ? '✓' : ''}
+              </span>
               <div className={styles.probInfo}>
                 <div className={styles.probName}>{p.name}</div>
                 <div className={styles.probMeta}>
@@ -195,14 +253,15 @@ export default function Arena() {
         </div>
       </div>
 
-      {/* Main area */}
+      {/* ── Main ─────────────────────────────────────────── */}
       <div className={styles.main}>
+
         {/* Left: problem description */}
         <div className={styles.descCol}>
           {!selected ? (
             <div className={styles.empty}>
               <div className={styles.emptyIcon}>⚔️</div>
-              <p>Select a challenge to begin</p>
+              <p>Pick a challenge to start coding</p>
               <button onClick={() => setDrawerOpen(true)} className={styles.openDrawerBtn}>
                 Browse Challenges
               </button>
@@ -210,12 +269,12 @@ export default function Arena() {
           ) : (
             <>
               <div className={styles.descHeader}>
-                <div className={styles.descNum}>#{selected.id.replace('p', '')}</div>
+                <div className={styles.descNum}>#{selected.id}</div>
                 <div className={styles.descTitle}>{selected.name}</div>
                 <div className={styles.descBadges}>
                   <span className={`${styles.diffBadge} ${DIFF_COLORS[selected.diff]}`}>{DIFF_LABELS[selected.diff]}</span>
                   <span className={styles.topicBadge}>{selected.topic}</span>
-                  {solved.has(selected.id) && <span className={styles.solvedBadge}>Solved</span>}
+                  {isSolved && <span className={styles.solvedBadge}>Solved</span>}
                 </div>
               </div>
 
@@ -238,24 +297,53 @@ export default function Arena() {
                 </div>
               )}
 
-              {showHint && (
-                <div className={styles.hintBox}>
-                  <strong>Hint:</strong> {selected.hint}
-                </div>
-              )}
+              {/* Hint — always available */}
+              <div className={styles.descSection}>
+                <button
+                  onClick={() => setShowHint(h => !h)}
+                  className={styles.hintToggle}
+                >
+                  {showHint ? 'Hide Hint ▲' : 'Show Hint ▼'}
+                </button>
+                {showHint && (
+                  <div className={styles.hintBox}>{selected.hint}</div>
+                )}
+              </div>
 
-              {showSolution && (
-                <div className={styles.solutionBox}>
-                  <div className={styles.solutionLabel}>Solution</div>
-                  <pre className={styles.solutionCode}>{selected.solution}</pre>
-                </div>
-              )}
+              {/* Solution — locked until 3 failed submits */}
+              <div className={styles.descSection}>
+                {canSeeSolution ? (
+                  <>
+                    <button
+                      onClick={() => setShowSolution(s => !s)}
+                      className={styles.solutionToggle}
+                    >
+                      {showSolution ? 'Hide Solution ▲' : 'View Solution ▼'}
+                    </button>
+                    {showSolution && (
+                      <div className={styles.solutionBox}>
+                        <pre className={styles.solutionCode}>{selected.solution}</pre>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className={styles.solutionLocked}>
+                    🔒 Solution unlocks after {MAX_TRIES_FOR_SOLUTION} attempts
+                    {tries > 0 && (
+                      <span className={styles.triesLeft}>
+                        {' '}({MAX_TRIES_FOR_SOLUTION - tries} left)
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>
 
         {/* Right: editor */}
         <div className={styles.editorCol}>
+
           {/* Toolbar */}
           <div className={styles.toolbar}>
             <div className={styles.tbLeft}>
@@ -264,19 +352,21 @@ export default function Arena() {
               </button>
               <span className={styles.langBadge}>Python</span>
               <span className={`${styles.pyStatus} ${!pyReady ? styles.pyLoading : ''}`}>
-                {pyReady ? 'Ready' : 'Loading Python...'}
+                {pyReady ? '● Ready' : '● Loading...'}
               </span>
             </div>
             <div className={styles.tbRight}>
               {selected && (
                 <>
-                  <button onClick={() => { setShowHint(h => !h); setShowSolution(false) }} className={styles.tbBtn}>
-                    {showHint ? 'Hide Hint' : 'Hint'}
-                  </button>
-                  <button onClick={() => { setShowSolution(s => !s); setShowHint(false) }} className={styles.tbBtn}>
-                    {showSolution ? 'Hide Solution' : 'Solution'}
-                  </button>
-                  <button onClick={() => { setCode(selected.starter); setOutput(''); setOutputType('') }} className={styles.tbBtn}>
+                  {tries > 0 && !isSolved && (
+                    <span className={styles.tryCounter}>
+                      {tries}/{MAX_TRIES_FOR_SOLUTION} attempts
+                    </span>
+                  )}
+                  <button
+                    onClick={() => { setCode(selected.starter); setOutput(''); setOutputType(''); setTries(0); setShowSolution(false) }}
+                    className={styles.tbBtn}
+                  >
                     Reset
                   </button>
                 </>
@@ -284,7 +374,7 @@ export default function Arena() {
             </div>
           </div>
 
-          {/* Code area */}
+          {/* Code editor */}
           <textarea
             ref={textareaRef}
             className={styles.codeArea}
@@ -292,28 +382,32 @@ export default function Arena() {
             onChange={e => setCode(e.target.value)}
             onKeyDown={handleKeyDown}
             spellCheck={false}
+            autoCorrect="off"
+            autoCapitalize="off"
             placeholder="# Select a problem to start coding..."
             disabled={!selected}
           />
 
-          {/* Feedback */}
+          {/* Feedback strip */}
           {outputType === 'ok' && (
             <div className={`${styles.feedback} ${styles.feedbackOk}`}>
-              {justSolved && !solved.has(selected?.id) ? '🎉 Correct! Problem solved!' : '✓ All tests passed!'}
+              ✓ Correct! {!isSolved ? `+${XP_VALUES[selected?.diff] ?? 10} XP earned` : 'Already solved'}
             </div>
           )}
           {outputType === 'wrong' && (
             <div className={`${styles.feedback} ${styles.feedbackWrong}`}>
-              ✗ Output doesn't match expected. Check your logic.
+              ✗ Output doesn't match.
+              {!canSeeSolution && ` ${MAX_TRIES_FOR_SOLUTION - tries} attempt${MAX_TRIES_FOR_SOLUTION - tries !== 1 ? 's' : ''} until solution unlocks.`}
+              {canSeeSolution && ' Solution is now unlocked in the left panel.'}
             </div>
           )}
           {outputType === 'err' && (
             <div className={`${styles.feedback} ${styles.feedbackErr}`}>
-              Error in your code — check the output below.
+              ✗ Error — check output below.
             </div>
           )}
 
-          {/* Output + buttons */}
+          {/* Output + action buttons */}
           <div className={styles.bottom}>
             <div className={styles.outputZone}>
               <div className={styles.outputBar}>
