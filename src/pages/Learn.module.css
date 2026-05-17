@@ -3,7 +3,7 @@
   min-height: calc(100vh - 64px);
 }
 
-/* Sidebar */
+/* ── Sidebar ───────────────────────────────────────── */
 .sidebar {
   width: 240px;
   flex-shrink: 0;
@@ -13,6 +13,9 @@
   top: 64px;
   height: calc(100vh - 64px);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .sidebar::-webkit-scrollbar { width: 4px; }
@@ -21,12 +24,12 @@
 .sideSection { margin-bottom: 20px; }
 
 .sideLabel {
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.4);
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.35);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 0 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-weight: 700;
 }
 
@@ -40,16 +43,28 @@
   font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.12s;
+  transition: background 0.15s, color 0.15s;
   margin-bottom: 2px;
 }
 
-.sideItem:hover { background: rgba(255,255,255,0.12); color: #fff; }
-
-.sideActive {
-  background: rgba(255,255,255,0.2);
+.sideItem:hover:not(.sideLocked) {
+  background: rgba(255,255,255,0.12);
   color: #fff;
 }
+
+.sideActive {
+  background: rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+}
+
+.sideLocked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sideLocked:hover { background: none !important; }
+
+.lockedText { text-decoration: none; }
 
 .sideCheck {
   width: 14px;
@@ -57,14 +72,37 @@
   color: #a5d6a7;
   font-weight: 800;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Content */
+.lockIcon { font-size: 0.7rem; }
+
+/* Demo banner */
+.demoBanner {
+  margin-top: auto;
+  background: rgba(255, 193, 7, 0.15);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 10px;
+  padding: 12px;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.demoBannerTitle {
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: #ffd54f;
+  margin-bottom: 4px;
+}
+
+/* ── Content ───────────────────────────────────────── */
 .content {
   flex: 1;
   padding: 32px 24px 60px;
   max-width: 820px;
-  overflow-y: auto;
 }
 
 .lessonCard {
@@ -75,26 +113,20 @@
   overflow: hidden;
 }
 
-/* Lesson HTML rendered from PQQQ */
-.lessonHtml {
-  padding: 28px 32px;
-}
+.lessonHtml { padding: 28px 32px; }
 
-/* Override styles from PQQQ HTML within this container */
 .lessonHtml :global(.lesson-title) {
   font-family: var(--font-heading);
   font-size: 1.8rem;
   color: var(--dark);
   margin-bottom: 12px;
 }
-
 .lessonHtml :global(.lesson-intro) {
   font-size: 0.97rem;
   color: #37474f;
   line-height: 1.75;
   margin-bottom: 14px;
 }
-
 .lessonHtml :global(.analogy-box) {
   background: #fff8e1;
   border-left: 4px solid #ffd54f;
@@ -104,7 +136,6 @@
   font-size: 0.92rem;
   line-height: 1.65;
 }
-
 .lessonHtml :global(.tip-box) {
   background: #e8f5e9;
   border-left: 4px solid #43a047;
@@ -114,7 +145,6 @@
   font-size: 0.92rem;
   line-height: 1.65;
 }
-
 .lessonHtml :global(.warn-box) {
   background: #fff3e0;
   border-left: 4px solid #f57c00;
@@ -123,7 +153,6 @@
   margin: 14px 0;
   font-size: 0.92rem;
 }
-
 .lessonHtml :global(.code-block) {
   background: #1a1a2e;
   color: #e0e0e0;
@@ -136,21 +165,18 @@
   margin: 14px 0;
   white-space: pre;
 }
-
 .lessonHtml :global(.quiz-section) {
   background: #ede7f6;
   border-radius: 12px;
   padding: 18px;
   margin-top: 20px;
 }
-
 .lessonHtml :global(.quiz-section h4) {
   font-family: var(--font-heading);
   font-size: 1.1rem;
   color: #4527a0;
   margin-bottom: 14px;
 }
-
 .lessonHtml :global(.quiz-q) {
   margin-bottom: 16px;
   padding-bottom: 16px;
@@ -167,13 +193,11 @@
   color: #311b92;
   margin-bottom: 8px;
 }
-
 .lessonHtml :global(.quiz-opts) {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
-
 .lessonHtml :global(.qopt) {
   padding: 6px 14px;
   border: 2px solid #d1c4e9;
@@ -184,25 +208,21 @@
   cursor: pointer;
   transition: all 0.12s;
 }
-
 .lessonHtml :global(.qopt:hover) {
   border-color: #7e57c2;
   background: #f3e5f5;
 }
-
 .lessonHtml :global(.qopt.correct) {
   border-color: #43a047;
   background: #e8f5e9;
   color: #1b5e20;
   font-weight: 700;
 }
-
 .lessonHtml :global(.qopt.wrong) {
   border-color: #e53935;
   background: #ffebee;
   color: #b71c1c;
 }
-
 .lessonHtml :global(.qcode) {
   background: #1a1a2e;
   color: #e0e0e0;
@@ -214,7 +234,6 @@
   white-space: pre;
   display: block;
 }
-
 .lessonHtml :global(code) {
   background: #eef2ff;
   color: #3949ab;
@@ -223,18 +242,49 @@
   font-family: 'Courier New', monospace;
   font-size: 0.88em;
 }
-
-.lessonHtml :global(.lesson-nav) { display: none; } /* We handle nav ourselves */
+.lessonHtml :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 0.9rem;
+}
+.lessonHtml :global(th) {
+  background: #1a237e;
+  color: white;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 700;
+}
+.lessonHtml :global(td) {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.lessonHtml :global(tr:nth-child(even) td) {
+  background: #f5f5f5;
+}
+.lessonHtml :global(ul) {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+.lessonHtml :global(li) {
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.lessonHtml :global(h3) {
+  font-size: 1.15rem;
+  margin: 20px 0 8px;
+  color: var(--dark);
+}
 
 /* Editor section */
 .editorSection {
   padding: 0 32px 24px;
   border-top: 2px solid var(--border);
 }
-
 .editorTitle {
-  font-size: 1.1rem;
-  margin: 20px 0 0;
+  font-size: 1rem;
+  margin: 18px 0 0;
   color: var(--dark);
 }
 
@@ -242,72 +292,71 @@
 .navRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 32px;
+  padding: 14px 32px;
   border-top: 2px solid var(--border);
   background: var(--gray-light);
   flex-wrap: wrap;
   gap: 10px;
 }
-
 .navRight {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
 .btnPrev {
-  padding: 10px 20px;
+  padding: 9px 18px;
   background: var(--white);
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   cursor: pointer;
   color: var(--dark);
-  transition: all 0.12s;
+  transition: border-color 0.15s;
 }
 .btnPrev:hover { border-color: var(--dark); }
-
 .btnDone {
-  padding: 10px 20px;
+  padding: 9px 18px;
   background: var(--teal);
   color: white;
   border: 2px solid var(--dark);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: all 0.12s;
+  transition: transform 0.1s;
 }
-
+.btnDone:hover { transform: translateY(-1px); }
 .doneChip {
   background: var(--green);
   color: white;
-  padding: 6px 14px;
+  padding: 5px 14px;
   border-radius: 20px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 800;
 }
-
 .btnNext {
-  padding: 10px 22px;
+  padding: 9px 20px;
   background: var(--coral);
   color: white;
   border: 2px solid var(--dark);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: all 0.12s;
+  transition: transform 0.1s;
 }
-
 .btnNext:hover { transform: translateY(-1px); }
+.lockedNext {
+  font-size: 0.85rem;
+  color: var(--gray);
+  font-weight: 700;
+}
 
 @media (max-width: 768px) {
   .layout { flex-direction: column; }
